@@ -1,0 +1,29 @@
+﻿Build started 2014/05/08 (木) 13:15:18.
+     1>Project "E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\chart2mid\chart2mid.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\chart2mid.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt chart2mid.cpp
+         chart2mid.cpp
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(56): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(57): warning C4244: '+=' : conversion from 'double' to 'byte', possible loss of data
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(89): warning C4018: '>=' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(127): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(284): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(301): warning C4244: '=' : conversion from '__int64' to 'unsigned int', possible loss of data
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(337): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(152): warning C4101: 'number_of_tracks' : unreferenced local variable
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\chart2mid.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.lib" /MACHINE:X86 Debug\chart2mid.obj
+         LINK : E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.exe not found or not built by the last incremental link; performing full link
+         chart2mid.vcxproj -> E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.exe;#1" /manifest Debug\chart2mid.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\chart2mid.unsuccessfulbuild".
+         Touching "Debug\chart2mid.lastbuildstate".
+     1>Done Building Project "E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\chart2mid\chart2mid.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.59
