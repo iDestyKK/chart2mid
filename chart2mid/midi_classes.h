@@ -1,6 +1,8 @@
 #ifndef MIDI_CLASSES_H
 #define MIDI_CLASSES_H
 
+#include <string>
+
 //Custom Data Type, byte.
 typedef unsigned char byte;
 
@@ -74,6 +76,22 @@ class SyncTrack {
 		TS ts;
 };
 
+class Event {
+	public:
+		//Constructor
+		Event(unsigned int a, std::string str) {
+			pos = a;
+			text = str;
+		};
+		Event();
+
+		unsigned int getPos() { return pos; }
+		std::string getText() { return text; }
+	private:
+		unsigned int pos;
+		std::string text;
+};
+
 class Note {
 	public:
 		Note(unsigned int a, char b, unsigned char c, unsigned int d, unsigned char diff) {
@@ -83,6 +101,7 @@ class Note {
 			sustain_length = d;
 			difficulty = diff;
 		};
+		Note();
 
 		//Define functions for getting values (Yet not setting them).
 		unsigned int getPos() { return pos; }
@@ -96,6 +115,29 @@ class Note {
 		unsigned char colour;
 		unsigned int sustain_length;
 		unsigned char difficulty;
+};
+
+class NoteEntry {
+	public:
+		//Note Constructor
+		NoteEntry(Note a) {
+			pos = a.getPos();
+			n = a;
+			type = 0;
+		};
+
+		//Text Event Constructor
+		NoteEntry(Event a) {
+			pos = a.getPos();
+			e = a;
+			type = 1;
+		};
+		NoteEntry();
+	private:
+		byte type;
+		unsigned int pos;
+		Note n;
+		Event e;
 };
 
 #endif

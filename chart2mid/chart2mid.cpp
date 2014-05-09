@@ -121,8 +121,15 @@ void writeMTrkHeader(vector<byte> &vec) {
 	vec.insert(vec.end(), begin(MTrk), end(MTrk));
 }
 
+void addTitleEventToVector(vector<byte> &vec, string text) {
+	vec.push_back(0x03); //0x03 is Track Title Event.
+	vec.push_back((byte)text.length()); //String length
+	for (int i = 0; i < text.length(); i++)
+		vec.push_back((byte)text[i]);
+}
+
 void addTextEventToVector(vector<byte> &vec, string text) {
-	vec.push_back(0x03); //0x03 is Text Event.
+	vec.push_back(0x01); //0x01 is Text Event.
 	vec.push_back((byte)text.length()); //String length
 	for (int i = 0; i < text.length(); i++)
 		vec.push_back((byte)text[i]);
@@ -187,7 +194,7 @@ int main() {
 	//Let us begin by scanning files until it hits a "}".
 
 	unsigned int pos, value;
-	string type;
+	string type, svalue;
 	vector<SyncTrack> SyncEvents_in_chart;
 
 	while (getline(chart,line) && line[0] != '}') {
@@ -207,6 +214,30 @@ int main() {
 	}
 
 	track_number++;
+
+	//Afterwards is "EVENTS"
+	getline(chart,line);
+	bool events_exist = false;
+	vector<Event> Events_in_chart;
+	if (line == "[Events]" || line == "[EVENTS]") {
+		cout << "Reading [Events]..." << endl;
+		events_exist = true;
+
+		while (getline(chart,line) && line[0] != '}') {
+			istringstream values;
+			values.clear();
+			values.str(line);
+			string firstfield, equals;
+			values >> pos >> equals >> type >> svalue; //Now you know why I initialized "svalue" earlier. ;)
+			
+			//Now is the time where we check what variables are what. Afterwards, we will use this information for the MIDI.
+			if (type == "E") {
+				Events_in_chart.push_back(Event(pos, svalue));
+			}
+		}
+		track_number++;
+	}
+	
 
 
 	//Draw events... if necessary.
@@ -269,14 +300,14 @@ int main() {
 	midi.open("song.mid", ios::binary);
 	byte header[] = { 0x4D, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06, track_type / 256, track_type % 256, track_number / 256, track_number % 256 , deltatime / 256, deltatime % 256 };
 	fileContents.insert(fileContents.end(), begin(header), end(header));
-	writeMTrkHeader(fileContents);
 
 	//This is where it gets a bit... complicated. Now we need an individual vector specifically for the SyncTrack Events. To do this, abuse classes and generate a MIDI Channel.
 	cout << "Generating MIDI_EXPORT..." << endl;
+	writeMTrkHeader(fileContents);
 	vector<byte> MIDI_EXPORT;
 	byte starter[] = { 0x00, 0xFF };
 	MIDI_EXPORT.insert(MIDI_EXPORT.end(), begin(starter), end(starter));
-	addTextEventToVector(MIDI_EXPORT, "midi_export");
+	addTitleEventToVector(MIDI_EXPORT, "midi_export");
 	//MIDI_EXPORT.insert(MIDI_EXPORT.end(), begin(channel_name), end(channel_name));
 	unsigned int channel_size = 0;
 	unsigned int prev_pos = 0;
@@ -331,6 +362,37 @@ int main() {
 	fileContents.insert(fileContents.end(), begin(csize), end(csize));
 	fileContents.insert(fileContents.end(), MIDI_EXPORT.begin(), MIDI_EXPORT.end());
 
+	if (events_exist) {
+		//How about Track events?
+		cout << "Generating EVENTS..." << endl;
+		writeMTrkHeader(fileContents);
+		vector<byte> EVENTS;
+		unsigned int prev_pos = 0;
+		byte starter[] = { 0x00, 0xFF };
+		EVENTS.insert(EVENTS.end(), begin(starter), end(starter));
+		addTitleEventToVector(EVENTS, "EVENTS");
+		for (int i = 0; i < Events_in_chart.size(); i++) {
+			Int_to_VLQ(Events_in_chart[i].getPos() - prev_pos, EVENTS);
+			prev_pos = Events_in_chart[i].getPos();
+			EVENTS.push_back(0xFF);
+			string tmpstr = Events_in_chart[i].getText();
+			tmpstr = '[' + tmpstr.substr(1,tmpstr.length() - 2) + ']';
+			addTextEventToVector(EVENTS, tmpstr);
+		}
+		EVENTS.push_back(0x00);
+		EVENTS.push_back(0xFF);
+		EVENTS.push_back(0x2F); //0x2F Indicates the end of the track.
+		EVENTS.push_back(0x00);
+
+		byte csize[] = { EVENTS.size() / (2 << 23)
+		               , EVENTS.size() / (2 << 15)
+		               , EVENTS.size() / (2 <<  7)
+		               , EVENTS.size() % (2 <<  7) };
+
+		//Write events to MIDI File.
+		fileContents.insert(fileContents.end(), begin(csize), end(csize));
+		fileContents.insert(fileContents.end(), EVENTS.begin(), EVENTS.end());
+	}
 
 
 	cout << "Writing Data";
