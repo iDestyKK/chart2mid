@@ -11,7 +11,10 @@
 		-Reads [Song] for Deltatime.
 		-Added TS and BPM scanning.
 		-MIDI File Writing implemented.
-		-Tested importing MIDI with FL Studio. Works flawlessly.
+		
+		Update (2014年5月9日):
+		-Reads [EVENT] stuff...
+		-Writes [EVENT] MIDI Channel.
 
 		By: Clara Eleanor Taylor
 
