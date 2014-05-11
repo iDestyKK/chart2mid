@@ -240,21 +240,6 @@ int main() {
 		}
 		track_number++;
 	}
-	
-
-
-	//Draw events... if necessary.
-	/*for (int i = 0; i < SyncEvents_in_chart.size(); i++) {
-		switch (SyncEvents_in_chart[i].getType())
-		{
-			case 0:
-				cout << "BPM Change: "     << SyncEvents_in_chart[i].getBPM().getValue() << endl;
-				break;
-			case 1:
-				cout << "Time Signature: " << SyncEvents_in_chart[i].getTS ().getValue() << endl;
-				break;
-		}
-	}*/
 
 	bool instrument_exists[num_of_ins];
 	for (int i = 0; i < num_of_ins; i++) {
