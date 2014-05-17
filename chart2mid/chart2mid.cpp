@@ -15,6 +15,12 @@
 		Update (2014年5月9日):
 		-Reads [EVENT] stuff...
 		-Writes [EVENT] MIDI Channel.
+		
+		Update (2014年5月17日):
+		-Reads ALL notes from ALL instruments of ALL difficulties
+		-Processes all notes from aforementioned instruments and sorts.
+		-Merges all notes of the same instrument, regardless of instrument.
+		-Generates "Off Key" Press Notes... Each Note in a MIDI file needs to be released at some point. (Typically 0x80)
 
 		By: Clara Eleanor Taylor
 
@@ -443,6 +449,7 @@ int main() {
 	//notechart[0][0].getPos() - Returns the first note's position of the ExpertSingle chart.
 	//notechart[(ins * num_of_difficulties) + dif][note]
 	//notechart[(ins * num_of_difficulties) + dif].size();
+
 	cout << endl;
 	vector< vector<NoteEntry> > difchart;
 	difchart.resize(num_of_ins);
