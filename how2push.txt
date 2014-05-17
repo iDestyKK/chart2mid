@@ -1,0 +1,6 @@
+git remote add origin https://github.com/iDestyKK/chart2mid.git
+git push -u origin master
+
+git add .
+git commit -m "Text"
+git push -u origin master

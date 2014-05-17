@@ -138,6 +138,105 @@ void addTextEventToVector(vector<byte> &vec, string text) {
 		vec.push_back((byte)text[i]);
 }
 
+void merge_charts(vector<NoteEntry> &a, vector<NoteEntry> &b) {
+	vector<NoteEntry> c;
+	//Merges Note List B into Note List A.
+	if (a.size() == 0) {
+		for (int i = 0; i < b.size(); i++)
+			c.push_back(b[i]);
+	}
+	else {
+		//Go based on which list is larger...
+		int queue = 0;
+		if (a.size() > b.size()) {
+			for (int i = 0; i < a.size(); i++)
+			{
+				for (int n = queue; n < b.size(); n++)
+				{
+					if (b[n].getPos() < a[i].getPos()) {
+						c.push_back(b[n]);
+						queue++;
+					}
+				}
+				c.push_back(a[i]);
+			}
+			if (queue < b.size()) {
+				for (int n = queue; n < b.size(); n++) {
+					c.push_back(b[n]);
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < b.size(); i++)
+			{
+				for (int n = queue; n < a.size(); n++)
+				{
+					if (a[n].getPos() < b[i].getPos()) {
+						c.push_back(a[n]);
+						queue++;
+					}
+				}
+				c.push_back(b[i]);
+			}
+			if (queue < a.size()) {
+				for (int n = queue; n < a.size(); n++) {
+					c.push_back(a[n]);
+				}
+			}
+		}
+	}
+
+	//Replace A with C
+	a.clear();
+	for (int i = 0; i < c.size(); i++)
+		a.push_back(c[i]);
+}
+
+void sortVectorByPos(vector<NoteEntry> &a) {
+	vector<NoteEntry> tmp;
+	vector<bool> selected(a.size());
+	//cout << "Processing: (" << a.size() + (a.size() * a.size()) << ")" << endl;
+	for (int i = 0; i < a.size(); i++)
+		selected[i] = false;
+
+	for (int i = 0; i < a.size(); i++) {
+		unsigned int lowest = -1;
+		for (int n = 0; n < a.size(); n++) {
+			if (selected[n] == false) {
+				if (lowest == -1)
+					lowest = n;
+				else
+				if (a[n].getPos() < a[lowest].getPos())
+					lowest = n;
+			}
+		}
+		tmp.push_back(a[lowest]);
+		selected[lowest] = true;
+	}
+
+	//Replace A with TMP
+	a.clear();
+	for (int i = 0; i < tmp.size(); i++)
+		a.push_back(tmp[i]);
+}
+
+void addLooseEnds(vector<NoteEntry> &a, unsigned int resolution) {
+	unsigned int queue = 0;
+	vector<NoteEntry> letgo;
+	for (int i = 0; i < a.size(); i++) {
+		if (a[i].isNote()) {
+			//Get sustain length.
+			unsigned int suslen = a[i].getNote().getSusLength();
+			if (suslen == 0) { suslen = resolution / 4; }
+			letgo.push_back(NoteEntry(LNote(a[i].getPos() + suslen, a[i].getNote().getColour(), a[i].getNote().getDifficulty())));
+			//cout << a[i].getPos() + suslen << " " << a[i].getNote().getColour() << " " << (int)a[i].getNote().getDifficulty() << endl;
+		}
+	}
+
+	//sortVectorByPos(letgo);
+	merge_charts(a, letgo);
+}
+
 int main() {
 
 	//Show the console our pretty little art.
@@ -235,13 +334,14 @@ int main() {
 			
 			//Now is the time where we check what variables are what. Afterwards, we will use this information for the MIDI.
 			if (type == "E") {
-				Events_in_chart.push_back(Event(pos, svalue));
+				Events_in_chart.push_back(Event(pos, svalue, -1));
 			}
 		}
 		track_number++;
 	}
 
 	bool instrument_exists[num_of_ins];
+	bool difficulty_exists[num_of_ins][num_of_difficulties];
 	for (int i = 0; i < num_of_ins; i++) {
 		instrument_exists[i] = false; //Just saying.
 	}
@@ -256,13 +356,19 @@ int main() {
 			if (line != "[Song]" && line != "[SyncTrack]" && line != "[Events]") {
 				//Bingo.
 				string txt = line.substr(1,line.length() - 2);
+				bool tmpd_exists[num_of_difficulties];
 				for (int i = 0; i < num_of_difficulties; i++) {
-					if (txt.substr(0,difficulties[i].length()) == difficulties[i])
+					if (txt.substr(0,difficulties[i].length()) == difficulties[i]) {
 						txt = txt.substr(difficulties[i].length(),txt.length() - difficulties[i].length());
+						tmpd_exists[i] = true;
+					}
 				}
 				for (int i = 0; i < num_of_ins; i++) {
-					if (txt == instruments[i])
+					if (txt == instruments[i]) {
 						instrument_exists[i] = true;
+						for (int a = 0; a < num_of_difficulties; a++)
+							difficulty_exists[i][a] = tmpd_exists[a];
+					}
 				}
 			}
 		}
@@ -272,8 +378,84 @@ int main() {
 	cout << endl << "Instruments Available:" << endl;
 	for (int i = 0; i < num_of_ins; i++) {
 		if (instrument_exists[i] == true) {
-			cout << "  -" << instruments[i] << endl;
+			cout << "  -" << instruments[i] << endl << "    -";
+			bool in = false;
+			for (int a = 0; a < num_of_difficulties; a++)
+				if (difficulty_exists[i][a])
+					if (in == false) {
+						cout << difficulties[a];
+						in = true;
+					} else {
+						cout << ", " << difficulties[a];
+					}
+			cout << endl;
 			track_number++;
+		}
+	}
+
+	cout << endl;
+
+	//Now begin reading the notes of the chart file.
+	vector< vector<NoteEntry> > notechart;
+	notechart.resize(num_of_ins * num_of_difficulties);
+
+	cout << "Reading ALL Notes..." << endl;
+
+	while (getline(chart,line)) {
+		if (line[0] == '[') {
+			for (int a = 0; a < num_of_ins; a++) {
+				for (int b = 0; b < num_of_difficulties; b++) {
+					if ('[' + difficulties[b] + instruments[a] + ']' == line) {
+						//Yay this is the difficulty we want.
+						getline(chart,line); //Skip the "{"
+						while (getline(chart,line) && line[0] != '}') {
+							//READ THOSE ENTRIES
+							unsigned int pos, suslength;
+							byte type;
+							string text;
+							byte colour, equals;
+							unsigned int epos = line.find("= ") + 4;
+
+							istringstream values;
+							values.clear();
+							values.str(line);
+							values >> pos >> equals >> type;
+							switch (type) {
+								case 'N':
+									//Note
+									values >> colour >> suslength;
+									notechart[(a * num_of_difficulties) + b].push_back(NoteEntry(Note(pos, type, colour, suslength, b)));
+									break;
+								case 'E':
+									//Event
+									text = line.substr(epos,line.length() - epos);
+									notechart[(a * num_of_difficulties) + b].push_back(NoteEntry(Event(pos, text, b)));
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//For referene for this 2D Vector
+	//notechart[0][0].getPos() - Returns the first note's position of the ExpertSingle chart.
+	//notechart[(ins * num_of_difficulties) + dif][note]
+	//notechart[(ins * num_of_difficulties) + dif].size();
+	cout << endl;
+	vector< vector<NoteEntry> > difchart;
+	difchart.resize(num_of_ins);
+	for (int a = 0; a < num_of_ins; a++) {
+		if (instrument_exists[a]) {
+			cout << "Processing " << instruments[a] << ".";
+			for (int b = 0; b < num_of_difficulties; b++) {
+				if (difficulty_exists[a][b])
+					merge_charts(difchart[a], notechart[(a * num_of_difficulties) + b]);
+			}
+			cout << ".";
+			addLooseEnds(difchart[a], deltatime);
+			cout << ". DONE" << endl;
 		}
 	}
 	
@@ -349,6 +531,8 @@ int main() {
 
 	fileContents.insert(fileContents.end(), begin(csize), end(csize));
 	fileContents.insert(fileContents.end(), MIDI_EXPORT.begin(), MIDI_EXPORT.end());
+
+	//Generate Note Data
 
 	if (events_exist) {
 		//How about Track events?
