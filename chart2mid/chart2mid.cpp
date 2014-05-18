@@ -33,6 +33,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <ctime>
 
 #include "midi_classes.h"
 
@@ -233,7 +234,7 @@ void addLooseEnds(vector<NoteEntry> &a, unsigned int resolution) {
 		if (a[i].isNote()) {
 			//Get sustain length.
 			unsigned int suslen = a[i].getNote().getSusLength();
-			if (suslen == 0) { suslen = resolution / 4; }
+			if (suslen == 0) { suslen = resolution / 8; }
 			letgo.push_back(NoteEntry(LNote(a[i].getPos() + suslen, a[i].getNote().getColour(), a[i].getNote().getDifficulty())));
 			//cout << a[i].getPos() + suslen << " " << a[i].getNote().getColour() << " " << (int)a[i].getNote().getDifficulty() << endl;
 		}
@@ -244,7 +245,6 @@ void addLooseEnds(vector<NoteEntry> &a, unsigned int resolution) {
 }
 
 int main() {
-
 	//Show the console our pretty little art.
 	cout << "/---------------------------------------------------------\\" << endl
 		<< "|*                                                       *|" << endl
@@ -257,6 +257,9 @@ int main() {
 
 	string path = "c:\\test\\notes.mid.chart";
 	ifstream chart;
+	clock_t start_c, end_c;
+	start_c = clock();
+
 	chart.open(path);
 
 	string line;
@@ -419,7 +422,8 @@ int main() {
 							unsigned int pos, suslength;
 							byte type;
 							string text;
-							byte colour, equals;
+							unsigned int colour;
+							byte equals;
 							unsigned int epos = line.find("= ") + 4;
 
 							istringstream values;
@@ -539,8 +543,61 @@ int main() {
 	fileContents.insert(fileContents.end(), begin(csize), end(csize));
 	fileContents.insert(fileContents.end(), MIDI_EXPORT.begin(), MIDI_EXPORT.end());
 
-	//Generate Note Data
+	//Generate Instrument tracks.
+	for (int a = 0; a < num_of_ins; a++) {
+		if (instrument_exists[a]) {
+			cout << "Generating " << corris_inst[a] << "..." << endl;
+			writeMTrkHeader(fileContents);
+			vector<byte> PART;
+			unsigned int prev_pos = 0;
+			byte starter[] = { 0x00, 0xFF };
+			PART.insert(PART.end(), begin(starter), end(starter));
+			addTitleEventToVector(PART, corris_inst[a]);
+			for (int i = 0; i < difchart[a].size(); i++) {
+				Int_to_VLQ(difchart[a][i].getPos() - prev_pos, PART);
+				prev_pos = difchart[a][i].getPos();
+				string tmpstr;
+				switch (difchart[a][i].getType()) {
+					case 0:
+						//Note
+						PART.push_back(0x90);
+						//note_hex[num_of_difficulties][5]
+						PART.push_back(note_hex[difchart[a][i].getNote().getDifficulty()][difchart[a][i].getNote().getColour()]); //Position of the note.
+						PART.push_back(0x70); //Velocity
+						break;
+					case 1:
+						//Event
+						PART.push_back(0xFF);
+						tmpstr = difchart[a][i].getEvent().getText();
+						tmpstr = '[' + tmpstr.substr(1,tmpstr.length() - 2) + ']';
+						addTextEventToVector(PART, tmpstr);
+						break;
+					case 2:
+						//LNote
+						PART.push_back(0x80);
+						PART.push_back(note_hex[difchart[a][i].getLNote().getDifficulty()][difchart[a][i].getLNote().getColour()]);
+						PART.push_back(0x70); //Velocity
+						break;
+				}
+				
+			}
+			PART.push_back(0x00);
+			PART.push_back(0xFF);
+			PART.push_back(0x2F); //0x2F Indicates the end of the track.
+			PART.push_back(0x00);
+	
+			byte csize[] = { PART.size() / (2 << 23)
+						   , PART.size() / (2 << 15)
+						   , PART.size() / (2 <<  7)
+						   , PART.size() % (2 <<  7) };
+	
+			//Write events to MIDI File.
+			fileContents.insert(fileContents.end(), begin(csize), end(csize));
+			fileContents.insert(fileContents.end(), PART.begin(), PART.end());
+		}
+	}
 
+	//Generate Note Data
 	if (events_exist) {
 		//How about Track events?
 		cout << "Generating EVENTS..." << endl;
@@ -578,7 +635,9 @@ int main() {
 	for (int i = 0; i < fileContents.size(); i++) {
 		midi << fileContents[i];
 	}
-	cout << " ...Successful!" << endl;
 	midi.close();
+	end_c = clock();
+
+	cout << endl << "File Writing complete (" << (double)(end_c - start_c)/CLOCKS_PER_SEC << "s" << ")." << endl;
 	getchar();
 }
