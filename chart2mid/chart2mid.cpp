@@ -542,7 +542,8 @@ int main() {
 
 	fileContents.insert(fileContents.end(), begin(csize), end(csize));
 	fileContents.insert(fileContents.end(), MIDI_EXPORT.begin(), MIDI_EXPORT.end());
-
+	ofstream debug;
+	debug.open("debug.txt");
 	//Generate Instrument tracks.
 	for (int a = 0; a < num_of_ins; a++) {
 		if (instrument_exists[a]) {
@@ -564,6 +565,7 @@ int main() {
 						//note_hex[num_of_difficulties][5]
 						PART.push_back(note_hex[difchart[a][i].getNote().getDifficulty()][difchart[a][i].getNote().getColour()]); //Position of the note.
 						PART.push_back(0x70); //Velocity
+						debug << difchart[a][i].getPos() << " =  N " << difchart[a][i].getNote().getColour() << difchart[a][i].getNote().getSusLength() << endl;
 						break;
 					case 1:
 						//Event
@@ -571,12 +573,14 @@ int main() {
 						tmpstr = difchart[a][i].getEvent().getText();
 						tmpstr = '[' + tmpstr.substr(1,tmpstr.length() - 2) + ']';
 						addTextEventToVector(PART, tmpstr);
+						debug << difchart[a][i].getPos() << " =  E " << difchart[a][i].getEvent().getText() << endl;
 						break;
 					case 2:
 						//LNote
 						PART.push_back(0x80);
 						PART.push_back(note_hex[difchart[a][i].getLNote().getDifficulty()][difchart[a][i].getLNote().getColour()]);
 						PART.push_back(0x70); //Velocity
+						debug << difchart[a][i].getPos() << " =  L " << difchart[a][i].getLNote().getColour() << endl;
 						break;
 				}
 				
@@ -596,6 +600,7 @@ int main() {
 			fileContents.insert(fileContents.end(), PART.begin(), PART.end());
 		}
 	}
+	debug.close();
 
 	//Generate Note Data
 	if (events_exist) {
