@@ -227,6 +227,42 @@ void sortVectorByPos(vector<NoteEntry> &a) {
 		a.push_back(tmp[i]);
 }
 
+void merge(vector<NoteEntry> &vec, int p, int r) {
+	int mid = floor((double)(p + r) / 2);
+	int i1 = 0;
+	int i2 = p;
+	int i3 = mid + 1;
+
+	//Temporary Vector
+	vector<NoteEntry> tmp;
+	//tmp.resize(r - p + 1);
+	
+	//Merge in sorted form the 2 arrays
+	while ( i2 <= mid && i3 <= r )
+        if ( vec[i2].getPos() < vec[i3].getPos() )
+            tmp.push_back(vec[i2++]);
+        else
+            tmp.push_back(vec[i3++]);
+
+    while ( i2 <= mid )
+        tmp.push_back(vec[i2++]);
+
+    while ( i3 <= r )
+        tmp.push_back(vec[i3++]);
+
+    for ( int i = p; i <= r; i++ )
+        vec[i] = tmp[i-p];
+}
+
+void merge_sort(vector<NoteEntry> &vec, int p, int r) {
+	if (p < r) {
+		int mid = floor((double)(p + r) / 2);
+		merge_sort(vec, p, mid); //RECURSIVE!
+		merge_sort(vec, mid + 1, r);
+		merge(vec, p, r);
+	}
+}
+
 void addLooseEnds(vector<NoteEntry> &a, unsigned int resolution) {
 	unsigned int queue = 0;
 	vector<NoteEntry> letgo;
@@ -236,12 +272,11 @@ void addLooseEnds(vector<NoteEntry> &a, unsigned int resolution) {
 			unsigned int suslen = a[i].getNote().getSusLength();
 			if (suslen == 0) { suslen = resolution / 8; }
 			letgo.push_back(NoteEntry(LNote(a[i].getPos() + suslen, a[i].getNote().getColour(), a[i].getNote().getDifficulty())));
-			//cout << a[i].getPos() + suslen << " " << a[i].getNote().getColour() << " " << (int)a[i].getNote().getDifficulty() << endl;
 		}
 	}
 
-	//sortVectorByPos(letgo);
 	merge_charts(a, letgo);
+	merge_sort(a, 0, a.size() - 1);
 }
 
 int main() {

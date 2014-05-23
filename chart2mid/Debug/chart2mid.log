@@ -1,4 +1,4 @@
-﻿Build started 2014/05/22 (木) 22:34:59.
+﻿Build started 2014/05/23 (金) 18:27:45.
      1>Project "E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\chart2mid\chart2mid.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\chart2mid.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -24,13 +24,15 @@
      1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(209): warning C4018: '<' : signed/unsigned mismatch
      1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(211): warning C4018: '<' : signed/unsigned mismatch
      1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(226): warning C4018: '<' : signed/unsigned mismatch
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(233): warning C4018: '<' : signed/unsigned mismatch
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(503): warning C4018: '<' : signed/unsigned mismatch
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(520): warning C4244: '=' : conversion from '__int64' to 'unsigned int', possible loss of data
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(564): warning C4018: '<' : signed/unsigned mismatch
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(622): warning C4018: '<' : signed/unsigned mismatch
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(649): warning C4018: '<' : signed/unsigned mismatch
-     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(279): warning C4101: 'number_of_tracks' : unreferenced local variable
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(231): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(262): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(272): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(543): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(560): warning C4244: '=' : conversion from '__int64' to 'unsigned int', possible loss of data
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(604): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(662): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(689): warning C4018: '<' : signed/unsigned mismatch
+     1>e:\users\idest_000\skydrive\visual studio 2010\projects\chart2mid\chart2mid\chart2mid.cpp(319): warning C4101: 'number_of_tracks' : unreferenced local variable
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\chart2mid.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.lib" /MACHINE:X86 Debug\chart2mid.obj
          LINK : E:\Users\idest_000\SkyDrive\Visual Studio 2010\Projects\chart2mid\Debug\chart2mid.exe not found or not built by the last incremental link; performing full link
@@ -44,4 +46,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.13
+Time Elapsed 00:00:01.60
