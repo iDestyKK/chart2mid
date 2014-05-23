@@ -146,85 +146,7 @@ void addTextEventToVector(vector<byte> &vec, string text) {
 }
 
 void merge_charts(vector<NoteEntry> &a, vector<NoteEntry> &b) {
-	vector<NoteEntry> c;
-	//Merges Note List B into Note List A.
-	if (a.size() == 0) {
-		for (int i = 0; i < b.size(); i++)
-			c.push_back(b[i]);
-	}
-	else {
-		//Go based on which list is larger...
-		int queue = 0;
-		if (a.size() > b.size()) {
-			for (int i = 0; i < a.size(); i++)
-			{
-				for (int n = queue; n < b.size(); n++)
-				{
-					if (b[n].getPos() < a[i].getPos()) {
-						c.push_back(b[n]);
-						queue++;
-					}
-				}
-				c.push_back(a[i]);
-			}
-			if (queue < b.size()) {
-				for (int n = queue; n < b.size(); n++) {
-					c.push_back(b[n]);
-				}
-			}
-		}
-		else {
-			for (int i = 0; i < b.size(); i++)
-			{
-				for (int n = queue; n < a.size(); n++)
-				{
-					if (a[n].getPos() < b[i].getPos()) {
-						c.push_back(a[n]);
-						queue++;
-					}
-				}
-				c.push_back(b[i]);
-			}
-			if (queue < a.size()) {
-				for (int n = queue; n < a.size(); n++) {
-					c.push_back(a[n]);
-				}
-			}
-		}
-	}
-
-	//Replace A with C
-	a.clear();
-	for (int i = 0; i < c.size(); i++)
-		a.push_back(c[i]);
-}
-
-void sortVectorByPos(vector<NoteEntry> &a) {
-	vector<NoteEntry> tmp;
-	vector<bool> selected(a.size());
-	//cout << "Processing: (" << a.size() + (a.size() * a.size()) << ")" << endl;
-	for (int i = 0; i < a.size(); i++)
-		selected[i] = false;
-
-	for (int i = 0; i < a.size(); i++) {
-		unsigned int lowest = -1;
-		for (int n = 0; n < a.size(); n++) {
-			if (selected[n] == false) {
-				if (lowest == -1)
-					lowest = n;
-				else
-				if (a[n].getPos() < a[lowest].getPos())
-					lowest = n;
-			}
-		}
-		tmp.push_back(a[lowest]);
-		selected[lowest] = true;
-	}
-
-	//Replace A with TMP
-	a.clear();
-	for (int i = 0; i < tmp.size(); i++)
-		a.push_back(tmp[i]);
+	a.insert(a.end(), b.begin(), b.end()); //LOLOLOLOL
 }
 
 void merge(vector<NoteEntry> &vec, int p, int r) {
@@ -235,7 +157,6 @@ void merge(vector<NoteEntry> &vec, int p, int r) {
 
 	//Temporary Vector
 	vector<NoteEntry> tmp;
-	//tmp.resize(r - p + 1);
 	
 	//Merge in sorted form the 2 arrays
 	while ( i2 <= mid && i3 <= r )
