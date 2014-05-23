@@ -256,15 +256,24 @@ int main() {
 		<< "\\---------------------------------------------------------/\n\n";
 
 	string path = "c:\\test\\notes.mid.chart";
+	string opath = "song.mid";
 	ifstream chart;
+
+	//Initialize the clock.
 	clock_t start_c, end_c;
 	start_c = clock();
 
+	//Open Chart File.
 	chart.open(path);
 
 	string line;
 	//Read [Song] Information.
 	getline(chart,line); //It is merely "[Song]"
+	if (line != "[Song]") {
+		//We can not proceed.
+		cout << "[FATAL ERROR]: First line is not \"[Song]\". Missing critical information." << endl;
+		return -1;
+	}
 	getline(chart,line); //It is merely a "{"...
 	
 	unsigned int deltatime, number_of_tracks, track_type, track_number;
@@ -477,8 +486,6 @@ int main() {
 	//Write Header
 	cout << "Generating Header Bytes..." << endl;
 	vector<byte> fileContents;
-	ofstream midi;
-	midi.open("song.mid", ios::binary);
 	byte header[] = { 0x4D, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06, track_type / 256, track_type % 256, track_number / 256, track_number % 256 , deltatime / 256, deltatime % 256 };
 	fileContents.insert(fileContents.end(), begin(header), end(header));
 
@@ -602,7 +609,7 @@ int main() {
 	}
 	debug.close();
 
-	//Generate Note Data
+	//Generate Event Data
 	if (events_exist) {
 		//How about Track events?
 		cout << "Generating EVENTS..." << endl;
@@ -635,7 +642,9 @@ int main() {
 		fileContents.insert(fileContents.end(), EVENTS.begin(), EVENTS.end());
 	}
 
-
+	
+	ofstream midi;
+	midi.open(opath, ios::binary);
 	cout << "Writing Data";
 	for (int i = 0; i < fileContents.size(); i++) {
 		midi << fileContents[i];
@@ -643,6 +652,6 @@ int main() {
 	midi.close();
 	end_c = clock();
 
-	cout << endl << "File Writing complete (" << (double)(end_c - start_c)/CLOCKS_PER_SEC << "s" << ")." << endl;
+	cout << "\n\nWrote " << fileContents.size() << " bytes to \"" << opath << "\"\n" << "File Writing complete (" << (double)(end_c - start_c)/CLOCKS_PER_SEC << "s" << ")." << endl;
 	getchar();
 }
