@@ -200,7 +200,7 @@ void addLooseEnds(vector<NoteEntry> &a, unsigned int resolution) {
 	merge_sort(a, 0, a.size() - 1);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	//Show the console our pretty little art.
 	cout << "/---------------------------------------------------------\\" << endl
 		<< "|*                                                       *|" << endl
@@ -211,8 +211,32 @@ int main() {
 		<< "|*                                                       *|" << endl
 		<< "\\---------------------------------------------------------/\n\n";
 
-	string path = "c:\\test\\notes.mid.chart";
-	string opath = "song.mid";
+	//string path = "c:\\test\\notes.mid.chart";
+	//string opath = "song.mid";
+
+	if (argc < 2) {
+		cerr << "Usage: chart2mid.exe <input path> <output path>"
+			<< endl
+			<< endl
+			<< "    <output path> is purely optional."
+			<< endl
+			<< "    If blank, uses input name + \".mid\" (not affecting the chart!)"
+			<< endl;
+		return 1;
+	}
+
+	string path, opath;
+
+	if (argc == 2) {
+		path = argv[1];
+		opath = string(argv[1]) + ".mid";
+	}
+
+	if (argc == 3) {
+		path = argv[1];
+		opath = argv[2];
+	}
+
 	ifstream chart;
 
 	//Initialize the clock.
