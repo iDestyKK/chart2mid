@@ -5,7 +5,7 @@
 		The purpose of this console application is to convert chart files to a MIDI format almost exactly (if not, the same) the same as Rock Band 3's Format.
 		This converter converts custom instruments (Edit the source code const variables) and many other things.
 
-		NOTE THIS ONLY CONVERTS TIME SIGNATURES AND BPM CHANGES ATM. EXTREMELY INCOMPLETE!!!
+		NOTE: THIS ONLY CONVERTS BPM, NOTES, AND EVENTS ATM. STILL INCOMPLETE.
 
 		Update (2014年5月7日):
 		-Reads [Song] for Deltatime.
@@ -21,6 +21,10 @@
 		-Processes all notes from aforementioned instruments and sorts.
 		-Merges all notes of the same instrument, regardless of instrument.
 		-Generates "Off Key" Press Notes... Each Note in a MIDI file needs to be released at some point. (Typically 0x80)
+		
+		Update (2014年5月24日):
+		-Implemented command line parameters so the application can work with any chart thrown at it.
+		-Merge Sort implemented (And it is lightning fast)
 
 		By: Clara Eleanor Taylor
 
@@ -529,8 +533,6 @@ int main(int argc, char* argv[]) {
 
 	fileContents.insert(fileContents.end(), begin(csize), end(csize));
 	fileContents.insert(fileContents.end(), MIDI_EXPORT.begin(), MIDI_EXPORT.end());
-	ofstream debug;
-	debug.open("debug.txt");
 	//Generate Instrument tracks.
 	for (int a = 0; a < num_of_ins; a++) {
 		if (instrument_exists[a]) {
@@ -552,7 +554,6 @@ int main(int argc, char* argv[]) {
 						//note_hex[num_of_difficulties][5]
 						PART.push_back(note_hex[difchart[a][i].getNote().getDifficulty()][difchart[a][i].getNote().getColour()]); //Position of the note.
 						PART.push_back(0x70); //Velocity
-						debug << difchart[a][i].getPos() << " =  N " << difchart[a][i].getNote().getColour() << difchart[a][i].getNote().getSusLength() << endl;
 						break;
 					case 1:
 						//Event
@@ -560,14 +561,12 @@ int main(int argc, char* argv[]) {
 						tmpstr = difchart[a][i].getEvent().getText();
 						tmpstr = '[' + tmpstr.substr(1,tmpstr.length() - 2) + ']';
 						addTextEventToVector(PART, tmpstr);
-						debug << difchart[a][i].getPos() << " =  E " << difchart[a][i].getEvent().getText() << endl;
 						break;
 					case 2:
 						//LNote
 						PART.push_back(0x80);
 						PART.push_back(note_hex[difchart[a][i].getLNote().getDifficulty()][difchart[a][i].getLNote().getColour()]);
 						PART.push_back(0x70); //Velocity
-						debug << difchart[a][i].getPos() << " =  L " << difchart[a][i].getLNote().getColour() << endl;
 						break;
 				}
 				
@@ -587,7 +586,6 @@ int main(int argc, char* argv[]) {
 			fileContents.insert(fileContents.end(), PART.begin(), PART.end());
 		}
 	}
-	debug.close();
 
 	//Generate Event Data
 	if (events_exist) {
