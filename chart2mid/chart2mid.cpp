@@ -38,6 +38,7 @@
 #include <fstream>
 #include <vector>
 #include <ctime>
+#include <algorithm>
 
 #include "midi_classes.h"
 
@@ -418,6 +419,7 @@ int main(int argc, char* argv[]) {
 							unsigned int colour;
 							byte equals;
 							unsigned int epos = line.find("= ") + 4;
+							bool check_duplicates;
 
 							istringstream values;
 							values.clear();
@@ -432,7 +434,18 @@ int main(int argc, char* argv[]) {
 								case 'E':
 									//Event
 									text = line.substr(epos,line.length() - epos);
-									notechart[(a * num_of_difficulties) + b].push_back(NoteEntry(Event(pos, text, b)));
+
+									check_duplicates = false;
+
+									//Yay stupid for loop. This ensures that events aren't duplicated multiple times (While mid2chart duplicates a single event to all difficulties, this deletes them).
+									for (int c = 0; c < num_of_difficulties; c++)
+										for (int d = 0; d < notechart[(a * num_of_difficulties) + c].size(); d++)
+											if (notechart[(a * num_of_difficulties) + c][d].isEvent())
+												if (notechart[(a * num_of_difficulties) + c][d].getPos() == pos && notechart[(a * num_of_difficulties) + c][d].getEvent().getText() == text)
+													check_duplicates = true;
+
+									if (!check_duplicates)
+										notechart[(a * num_of_difficulties) + b].push_back(NoteEntry(Event(pos, text, b)));
 									break;
 							}
 						}
@@ -631,5 +644,4 @@ int main(int argc, char* argv[]) {
 	end_c = clock();
 
 	cout << "\n\nWrote " << fileContents.size() << " bytes to \"" << opath << "\"\n" << "File Writing complete (" << (double)(end_c - start_c)/CLOCKS_PER_SEC << "s" << ")." << endl;
-	getchar();
 }
